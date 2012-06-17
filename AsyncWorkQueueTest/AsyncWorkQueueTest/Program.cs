@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -16,6 +17,8 @@ namespace AsyncWorkQueueTest
                     var time = i * 100;
                     var square = double.MaxValue - i;
 
+                    Console.WriteLine("Starting {0}", id);
+
                     q.Start(delegate
                     {
                         Console.WriteLine("Computing {0}", id);
@@ -25,6 +28,8 @@ namespace AsyncWorkQueueTest
                         return result;
                     });
                 }
+
+                Console.WriteLine("*** Done queueing.");
 
                 int count = 0;
                 foreach (var result in q.GetResults())
@@ -44,5 +49,34 @@ namespace AsyncWorkQueueTest
 
             Debugger.Break();
         }
+
+        public static void Test(IEnumerable<int> ids)
+        {
+            using (AsyncWorkQueue<Company> q = new AsyncWorkQueue<Company>(5))
+            {
+                foreach (int id in ids)
+                {
+                    int myId = id;
+
+                    q.Start(delegate { return GetCompany(myId); });
+                }
+
+
+            }
+        }
+
+        private static Company GetCompany(int id)
+        {
+            return new Company();
+        }
+
+        private class Company
+        {
+            public int Id;
+            public string Name;
+            public Employee[] Employees;
+        }
+
+        private class Employee{}
     }
 }
