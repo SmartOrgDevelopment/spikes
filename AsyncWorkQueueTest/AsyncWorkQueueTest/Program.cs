@@ -21,8 +21,9 @@ namespace AsyncWorkQueueTest
 
                     q.Start(delegate
                     {
-                        Console.WriteLine("Computing {0}", id);
+                        Console.WriteLine("COMPUTING ...  {0}", id);
                         Thread.Sleep(time);
+                        //throw new Exception("blah");
                         var result = Math.Sqrt(square);
                         Console.WriteLine("Done {0}", id);
                         return result;
@@ -35,6 +36,7 @@ namespace AsyncWorkQueueTest
                 foreach (var result in q.GetResults())
                 {
                     if (result.IsError)
+                        //handle / log errors here
                         throw result.Error;
 
                     Console.WriteLine(result.Value);
@@ -45,9 +47,16 @@ namespace AsyncWorkQueueTest
                 Console.WriteLine("\n###\nCount = {0}", count);
             }
 
+
+
+            Test(new List<int>() { 5, 6, 5, 4, 3, 2, 1 });
+
             Console.ReadLine();
 
-            Debugger.Break();
+            //Debugger.Break();
+
+           
+
         }
 
         public static void Test(IEnumerable<int> ids)
@@ -58,7 +67,10 @@ namespace AsyncWorkQueueTest
                 {
                     int myId = id;
 
-                    q.Start(delegate { return GetCompany(myId); });
+                    q.Start(delegate {
+                        Console.WriteLine(" other parallel task ... " + id);
+                        return GetCompany(myId);
+                    });
                 }
 
 
