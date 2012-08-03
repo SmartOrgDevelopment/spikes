@@ -48,6 +48,7 @@ namespace AsyncWorkQueueTest
         private readonly Semaphore _workSync = new Semaphore(0, int.MaxValue);
         private readonly ManualResetEvent _getResultsEvent = new ManualResetEvent(true);
         private volatile int _runningThreads;
+        private volatile int _waitingThreads;
         private volatile int _isDisposed; // 0 => false, nonzero => true
 
         /// <summary>
@@ -143,7 +144,15 @@ namespace AsyncWorkQueueTest
         {
             while (!IsDisposed)
             {
-                _workSync.WaitOne();
+                Interlocked.Increment(ref _waitingThreads);
+                try
+                {
+                    _workSync.WaitOne();
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _waitingThreads);
+                }
 
                 // Did we wake up because we're being disposed?
                 if (IsDisposed)
@@ -221,7 +230,7 @@ namespace AsyncWorkQueueTest
             {
                 // always close our semaphore so we can kill the threads.
 
-                _workSync.Release(int.MaxValue);
+                _workSync.Release(_waitingThreads);
                 _workSync.Close();
 
                 // Is stuff still running? Better make sure it's dead.
