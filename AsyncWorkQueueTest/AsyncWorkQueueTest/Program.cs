@@ -11,7 +11,7 @@ namespace AsyncWorkQueueTest
         {
             using (var q = new AsyncWorkQueue<double>(5))
              {
-                 for (int i = 0; i < 30; i++)
+                 for (int i = 0; i < 12; i++)
                  {
                      var id = i;
                      var time = i * 100;
@@ -71,6 +71,21 @@ namespace AsyncWorkQueueTest
                         return GetCompany(myId);
                     });
                 }
+
+               
+                foreach (var result in q.GetResults())
+                {
+                    if (result.IsError)
+                        //handle / log errors here
+                        throw result.Error;
+
+                    Company tmpCompany = (Company)result.Value;
+
+                    Console.WriteLine(tmpCompany.Id);
+
+                    
+                }
+
 
 
             }
