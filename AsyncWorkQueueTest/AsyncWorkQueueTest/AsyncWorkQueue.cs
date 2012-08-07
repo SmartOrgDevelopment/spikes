@@ -230,7 +230,9 @@ namespace AsyncWorkQueueTest
             {
                 // always close our semaphore so we can kill the threads.
 
-                _workSync.Release(_waitingThreads);
+                if (_waitingThreads > 0)
+                    _workSync.Release(_waitingThreads);
+
                 _workSync.Close();
 
                 // Is stuff still running? Better make sure it's dead.
