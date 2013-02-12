@@ -8,7 +8,7 @@ namespace AsyncWorkQueueTest
 {
     class Program
     {
-        private static double ONE_MILLION = 1000000.0;
+        
         public static int generate(int low, int high)
         {
             Random random = new Random();
@@ -16,18 +16,28 @@ namespace AsyncWorkQueueTest
         }
         public static void Main(string[] args)
         {
+            double numberOfRuns = 1000000.0;
+            int factor = 3;
+            if (args.Length > 0)
+            {
+                factor = Convert.ToInt32(args[0]);
+                numberOfRuns = Convert.ToDouble(args[1]);
+            }
+
+            Console.WriteLine(string.Format("{0} workers used in this run of {1}", factor,numberOfRuns));
+
+
             PointEstimate estimate = new PointEstimate();
             Stopwatch sw = Stopwatch.StartNew();
-            using (var q = new AsyncWorkQueue<double>(3))
+            using (var q = new AsyncWorkQueue<double>(factor))
              {
-                for (int i=0;i<3;i++) {
-                    // 3 processors
+                for (int i=0;i<factor;i++) {
                     var id = i;
                     q.Start(delegate
                     {
                         SpreadsheetGear.IWorkbookSet workbookSet = SpreadsheetGear.Factory.GetWorkbookSet();
-                        IWorkbook workbook = workbookSet.Workbooks.Open(@"C:\data\dev\Async\AsyncWorkQueueTest\AsyncWorkQueueTest\excel\helloWorld_template.xls");
-                        for (long j = 0; j < ONE_MILLION/3; j++)
+                        IWorkbook workbook = workbookSet.Workbooks.Open(@".\helloWorld_template.xls");
+                        for (long j = 0; j < numberOfRuns / factor; j++)
                         {
                             try
                             {
@@ -41,10 +51,7 @@ namespace AsyncWorkQueueTest
                                 var npvRange = sheet.Cells["npv"];
                                 double npv = (double)npvRange.Value;
                                 estimate.nextValueIs(npv);
-                                /*if (j % 50000 == 0)
-                                {
-                                    Console.WriteLine("Process "+id+ ", Runs: "+ j);
-                                }*/
+                               
                             }
                             catch (Exception e)
                             {
