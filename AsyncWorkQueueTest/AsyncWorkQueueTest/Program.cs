@@ -6,17 +6,32 @@ using SpreadsheetGear;
 
 namespace AsyncWorkQueueTest
 {
+    class RandomAdapter : Generator
+    {
+        private Random builtInGenerator;
+        public RandomAdapter()
+        {
+            this.builtInGenerator = new Random();
+        }
+        public double nextValue(int low, int high)
+        {
+            return this.builtInGenerator.Next(low, high);
+        }
+    }
+
+
     class Program
     {
-        
-        public static int generate(int low, int high)
+        private static Generator generator;
+        public static double generate(int low, int high)
         {
-            Random random = new Random();
-            return random.Next(low, high);
+            return generator.nextValue(low, high);
         }
         public static void Main(string[] args)
         {
             double numberOfRuns = 1000000.0;
+            //generator = new RandomAdapter();
+            generator = new UniformGenerator();
             int factor = 3;
             if (args.Length > 0)
             {
@@ -36,7 +51,7 @@ namespace AsyncWorkQueueTest
                     q.Start(delegate
                     {
                         SpreadsheetGear.IWorkbookSet workbookSet = SpreadsheetGear.Factory.GetWorkbookSet();
-                        IWorkbook workbook = workbookSet.Workbooks.Open(@".\helloWorld_template.xls");
+                        IWorkbook workbook = workbookSet.Workbooks.Open(@"c:\data\dev\Async\AsyncWorkQueueTest\AsyncWorkQueueTest\excel\helloWorld_template.xls");
                         for (long j = 0; j < numberOfRuns / factor; j++)
                         {
                             try
@@ -50,6 +65,7 @@ namespace AsyncWorkQueueTest
                                 sheet.Cells["numYears"].Value = Convert.ToDouble(numYears);
                                 var npvRange = sheet.Cells["npv"];
                                 double npv = (double)npvRange.Value;
+                                //Console.WriteLine("annRevenue = " + annRevenue + ", annCosts = " + annCosts + ", numYears = " + numYears+", NPV = "+npv);
                                 estimate.nextValueIs(npv);
                                
                             }
@@ -73,7 +89,7 @@ namespace AsyncWorkQueueTest
                          //handle / log errors here
                          throw result.Error;
                  }
-                 SummaryStatistics statistics = estimate.computeConfidenceIntervalForPercent(95);
+                 SummaryStatistics statistics = estimate.computeConfidenceIntervalForPercent(99);
                  sw.Stop();
                  Console.WriteLine("Mean: " + statistics.pointEstimate + ", [" + statistics.cLower + ", " + statistics.cUpper + "]");
                  Console.WriteLine("Elapsed time = " + sw.Elapsed);

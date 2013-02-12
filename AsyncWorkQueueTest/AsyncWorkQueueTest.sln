@@ -7,12 +7,15 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
+		Trial|x86 = Trial|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DDD65484-A378-439E-A1DB-30C5B07A3051}.Debug|x86.ActiveCfg = Debug|x86
 		{DDD65484-A378-439E-A1DB-30C5B07A3051}.Debug|x86.Build.0 = Debug|x86
 		{DDD65484-A378-439E-A1DB-30C5B07A3051}.Release|x86.ActiveCfg = Release|x86
 		{DDD65484-A378-439E-A1DB-30C5B07A3051}.Release|x86.Build.0 = Release|x86
+		{DDD65484-A378-439E-A1DB-30C5B07A3051}.Trial|x86.ActiveCfg = Trial|x86
+		{DDD65484-A378-439E-A1DB-30C5B07A3051}.Trial|x86.Build.0 = Trial|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
